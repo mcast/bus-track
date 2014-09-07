@@ -59,8 +59,8 @@ main() {
     else
         # Finished, for now
         pidof gpxlogger >/dev/null && killall -INT gpxlogger
+        pidof gpsmon    >/dev/null && killall -INT gpsmon # else it spins
         pidof gpsd      >/dev/null && sudo /etc/init.d/gpsd stop
-        killall -INT gpsmon # else it spins
         sleep 5
     fi
 }
