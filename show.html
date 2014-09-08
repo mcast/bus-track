@@ -1,0 +1,54 @@
+<html>
+ <head>
+  <title> Bus Track - test </title>
+
+  <link rel="stylesheet" href="leaflet.css" />
+  <script src="leaflet.js"></script>  
+  <!link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+  <!script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+
+  <link rel="stylesheet" href="leaflet-locatecontrol/src/L.Control.Locate.css" />
+  <!--[if lt IE 9]>
+      <link rel="stylesheet" href="leaflet-locatecontrol/src/L.Control.Locate.ie.css"/>
+  <![endif]-->
+  <script src="leaflet-locatecontrol/src/L.Control.Locate.js" ></script>
+
+  <style type="text/css">
+#map { height: 350px; }
+  </style>
+ </head>
+ <body>
+    <div id="map"></div>
+<script>
+  // from http://leafletjs.com/examples/quick-start.html
+  var map = L.map('map').setView([52.14613, 0.1181], 10);
+  // [51.505, -0.09], 13);
+
+  var mapUrl =
+  // 'http://{s}.tiles.mapbox.com/v3/MapID/{z}/{x}/{y}.png';
+  '../Maps/OSM/{z}/{x}/{y}.png'; // stashed by tangogps(1), symlinked
+  var mapAttr =
+  // 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>';
+    'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>';
+
+  L.tileLayer(mapUrl, {
+      attribution: mapAttr,
+      maxZoom: 17
+  }).addTo(map);
+
+  L.control.locate().addTo(map);
+
+  var popup = L.popup();
+  function onMapClick(e) {
+      popup
+          .setLatLng(e.latlng)
+          .setContent("You clicked the map at " + e.latlng.toString())
+          .openOn(map);
+      alert("You clicked the map at " + e.latlng + ", z=" + map.getZoom());
+  }
+
+  map.on('click', onMapClick);
+
+</script>
+
+</body></html>
