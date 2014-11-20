@@ -2,6 +2,8 @@
 
 from optparse import OptionParser
 from os import sys
+import time
+import json
 
 def main(argv):
     parser = OptionParser()
@@ -10,9 +12,21 @@ def main(argv):
     parser.add_option("-q", "--quiet",
                       action="store_false", dest="verbose", default=True,
                       help="don't print status messages to stderr")
-    (opts, args) = parser.parse_args(argv[1:])
+    parser.add_option("-T", "--test", dest="test", action="store_true",
+                      help="take input on stdin, prefix commands with echo")
 
+    (opts, args) = parser.parse_args(argv[1:])
     print( { 'o': opts, 'a':args } )
+
+    stream_from = sys.stdin if opts.test else watch_pipe()
+    
+    dec = json.JSONDecoder()
+    for ln in stream_from:
+        data = dec.decode(ln)
+        print( data )
+        
+        time.sleep(2)
+
     return 3
 
 exit( main(sys.argv) )
