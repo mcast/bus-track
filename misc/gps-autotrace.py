@@ -4,9 +4,10 @@ from optparse import OptionParser
 from os import sys
 import time
 import json
+from warnings import warn
 
 class AutoTrace:
-    def main(self, argv):
+    def __init__(self, argv):
         parser = OptionParser()
         parser.add_option("-d", "--dir", dest="dir", default="~/Tracks",
                           help="write tracks to DIR", metavar="DIR")
@@ -16,19 +17,29 @@ class AutoTrace:
         parser.add_option("-T", "--test", dest="test", action="store_true",
                           help="take input on stdin, prefix commands with echo")
 
-        (opts, args) = parser.parse_args(argv[1:])
-        self.opts = opts
-        print( { 'o': opts, 'a':args } )
+        (self.opts, self.args) = parser.parse_args(argv[1:])
 
-        stream_from = sys.stdin if opts.test else self.watch_pipe()
-
+    def do_read(self):
+        stream_from = sys.stdin if self.opts.test else self.watch_pipe()
         dec = json.JSONDecoder()
         for ln in stream_from:
             data = dec.decode(ln)
-            print( data )
-
+            if self.opts.verbose:
+                print( data )
+            self.do_line(data)
             time.sleep(2)
 
-        return 3
+    def _VERSION(self, data): pass
+    def _DEVICES(self, data):
+        print("devs %s" % data['devices'])
 
-exit( AutoTrace().main(sys.argv) )
+    for_CLASS = { 'VERSION': _VERSION, 'DEVICES': _DEVICES }
+    def do_line(self, data):
+        dclass = data.get('class')
+        fn = self.for_CLASS.get(dclass)
+        if fn == None:
+            warn("No handler for class:%s" % dclass)
+        else:
+            return fn(self, data)
+
+exit( AutoTrace(sys.argv).do_read() )
