@@ -33,6 +33,18 @@ class AutoTrace:
             self.do_line(data)
         self.event('EOF')
 
+    _state = {}
+    no_event = { 'time','satsused' }
+    def state(self, key, val):
+        if self._state.get(key) == val:
+            pass
+        else:
+            old = self._state.get(key)
+            self._state[key] = val
+            if not key in self.no_event:
+                self.event('state', { 'key': key, 'old': old, 'new': val })
+
+
     # {'proto_major': 3, 'proto_minor': 8, 'rev': '3.9', 'class': 'VERSION', 'release': '3.9'}
     def _VERSION(self, data):
         if data['proto_major'] == 3 and data['proto_minor'] == 8:
@@ -41,30 +53,40 @@ class AutoTrace:
             warn("Unexpected proto_minor in %s" % str(data))
         else:
             raise Exception("Unexpected data protocol %s" % str(data))
+        self.state('version', data)
 
     # {'devices': [{'class': 'DEVICE', 'flags': 1, 'parity': 'N', 'activated': '2014-10-10T07:51:44.092Z', 'native': 1, 'path': '/dev/rfcomm0', 'stopbits': 1, 'bps': 57600, 'cycle': 1.0, 'driver': 'Generic NMEA'}], 'class': 'DEVICES'}
     def _DEVICES(self, data):
-        devs = { dev['path']: dev for dev in data['devices'] }
-        self.event('DEVICES', devs)
+        #devs = { dev['path']: dev for dev in data['devices'] }
+        #self.event('DEVICES', devs)
+        pass
 
     # {'enable': True, 'class': 'WATCH', 'timing': False, 'scaled': False, 'nmea': False, 'raw': 0, 'json': True}
-    def _WATCH(self, data): pass
+    def _WATCH(self, data):
+        self.state('watch', data)
 
     # {'path': '/dev/rfcomm0', 'activated': 0, 'class': 'DEVICE'}
     # {'path': '/dev/rfcomm0', 'activated': '2014-10-10T07:51:55.524Z', 'driver': 'Generic NMEA', 'bps': 57600, 'parity': 'N', 'class': 'DEVICE', 'stopbits': 1, 'flags': 1, 'native': 1, 'cycle': 1.0}
-    def _DEVICE(self, data): pass
+    def _DEVICE(self, data):
+        self.state(data['path'], data['activated'])
 
     # {'class': 'TPV', 'speed': 0.0, 'tag': 'RMC', 'lon': 0.1, 'track': 0.0,
     #   'mode': 3, 'climb': 0.0, 'lat': 52.1, 'epv': 460.0,
     #   'device': '/dev/rfcomm0', 'ept': 0.005, 'alt': 0.0,
     #   'time': '2014-10-10T07:53:01.192Z'}
-    def _TPV(self, data): pass
+    def _TPV(self, data):
+        self.state('time', data['time'])
+        self.state('mode', data['mode'])
+        self.state('boxed', self.in_box(data))
 
     # {'class': 'SKY', 'hdop': 9.1, 'tag': 'GSV',
     #   'device': '/dev/rfcomm0', 'vdop': 20.0,
     #   'satellites': [{'az': 219, 'used': True, 'PRN': 31, 'el': 56, 'ss': 40},
     #                  {'az': 291, 'used': False, 'PRN': 16, 'el': 20, 'ss': 0}, ... ], 'pdop': 22.0}
-    def _SKY(self, data): pass
+    def _SKY(self, data):
+        satsused = [ s['PRN'] for s in data['satellites'] if s['used'] ]
+        self.state('satsused', satsused)
+
 
     for_CLASS = { 'VERSION': _VERSION, 'DEVICES': _DEVICES, 'WATCH': _WATCH,
                   'DEVICE': _DEVICE, 'SKY': _SKY, 'TPV':_TPV }
@@ -75,5 +97,9 @@ class AutoTrace:
             warn("No handler for class=%s in %s" % (dclass, data))
         else:
             return fn(self, data)
+
+
+    def in_box(self, tpv):
+        return True
 
 exit( AutoTrace(sys.argv).do_read() )
