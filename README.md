@@ -1,10 +1,14 @@
 -*- org -*-
 
-(Attempting polyglot github-flavoured-markdown / org-mode,
-so I can tick off the TODO items on the web.)
++ (Attempting polyglot github-flavoured-markdown / org-mode,
+  so I can tick off the TODO items on the web.)
++ Export is possible, but a poor second choice for me
+  + http://orgmode.org/manual/Markdown-export.html
+  + https://github.com/alexhenning/ORGMODE-Markdown
 
 * History
-** Aims **
+# History
+** Aims
 This is starting off as a bus tracker for the local Campus bus.
 
 I figure someone else might benefit from it, so I hope to avoid
@@ -16,6 +20,7 @@ departure.  In the absence of any other usage, this is likely to slip.
 + [2014-11-25 Tue] :: remember that it exists and publish it
 
 * [0/10] Plans
+# Plans
 + [ ] disconnected operation
   + [ ] gather data, possibly over multiple journeys
   + [ ] upload when told
@@ -51,6 +56,7 @@ departure.  In the absence of any other usage, this is likely to slip.
   + [ ] import relevant stuff from another org-mode file I keep
 
 * Feature requests
+# Feature requests
 ** [0/2] WIBNI, with real-time data
 + [ ] connect stranded passengers with drivers heading out of town on their way to < destination >
 + [ ] self-counting bus queues
