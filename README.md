@@ -38,6 +38,16 @@ departure.  In the absence of any other usage, this is likely to slip.
    - [ ] stop markers on map, by type
    - [ ] linear route pictogram below the map panel
 4. [ ] GPS(map)-to-pictogram linkage
+5. [ ] Working Firefox + gpsd
+    - options, if it's an old-protocol problem
+      - fix it
+      - old gpsd
+      - old Firefox
+      - some kind of ugly GPS v3 -> v2 protocol bridge
+    - links
+      - http://esr.ibiblio.org/?p=3617
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=492328
+      - https://bugzilla.mozilla.org/buglist.cgi?component=Geolocation&product=Core&bug_status=__open__
 5. [ ] pictogram position override linkage
    - "we are actually >here<"
    - for GPS outage / replacement
