@@ -91,6 +91,8 @@ a C<(name, direction, time)> tuple could probably be extracted from
 the historic record of bus timetables on Helix if those HTML tables
 could be reliably parsed.
 
+=back
+
 =cut
 
 sub main {
